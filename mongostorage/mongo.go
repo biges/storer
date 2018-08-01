@@ -2,7 +2,6 @@ package mongostorage
 
 import (
 	"fmt"
-	"log"
 
 	"github.com/ahmet/storer"
 	mgo "gopkg.in/mgo.v2"
@@ -28,7 +27,6 @@ func NewMongoStorage(uri string) (*MongoStorage, error) {
 	}
 
 	session.SetSafe(&mgo.Safe{})
-	log.Printf("Connected to MongoDB: %s", uri)
 
 	return &MongoStorage{
 		session:  session,
