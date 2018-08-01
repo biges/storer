@@ -1,7 +1,6 @@
 package mongostorage
 
 import (
-	"errors"
 	"fmt"
 	"log"
 
@@ -44,11 +43,14 @@ func NewMongoStorage(uri string) (*MongoStorage, error) {
 
 // Find returns all matching documents with query and pagination params
 func (s *MongoStorage) Find(collection string, query interface{}, result interface{}, pagination *storer.PaginationParams) error {
+	session := s.session.Clone()
+	defer session.Close()
+
 	if pagination == nil {
 		pagination = s.DefaultPaginationParams
 	}
 
-	return s.session.
+	return session.
 		DB(s.dialInfo.Database).
 		C(collection).
 		Find(query).
@@ -59,24 +61,27 @@ func (s *MongoStorage) Find(collection string, query interface{}, result interfa
 
 // Create inserts given object to store
 func (s *MongoStorage) Create(collection string, object interface{}) error {
-	return s.session.DB(s.dialInfo.Database).C(collection).Insert(object)
+	session := s.session.Clone()
+	defer session.Close()
+
+	return session.DB(s.dialInfo.Database).C(collection).Insert(object)
 }
 
 // Update updates record with given object
 func (s *MongoStorage) Update(collection string, query interface{}, change interface{}) error {
-	changeInfo, err := s.session.DB(s.dialInfo.Database).C(collection).UpdateAll(query, change)
-	if err != nil {
-		return err
-	} else if changeInfo == nil {
-		return errors.New("not updated")
-	}
+	session := s.session.Clone()
+	defer session.Close()
 
-	return nil
+	_, err := session.DB(s.dialInfo.Database).C(collection).UpdateAll(query, change)
+	return err
 }
 
 // Delete remove object with given id from store
 func (s *MongoStorage) Delete(collection string, query interface{}) error {
-	_, err := s.session.DB(s.dialInfo.Database).C(collection).RemoveAll(query)
+	session := s.session.Clone()
+	defer session.Close()
+
+	_, err := session.DB(s.dialInfo.Database).C(collection).RemoveAll(query)
 	return err
 }
 
