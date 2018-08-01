@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	"github.com/ahmet/storer"
-	mgo "gopkg.in/mgo.v2"
+	"github.com/globalsign/mgo"
 )
 
 // MongoStorage holds session and dial info of MongoDB connection
