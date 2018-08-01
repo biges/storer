@@ -19,7 +19,7 @@ type Storer interface {
 
 // PaginationParams should've used to pass pagination parameters to data layer
 type PaginationParams struct {
-	Limit  int
+	Limit  uint32
 	SortBy string
-	Page   int
+	Page   uint32
 }
