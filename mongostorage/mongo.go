@@ -88,3 +88,12 @@ func (s *MongoStorage) Close() error {
 	s.session.Close()
 	return nil
 }
+
+// NewPaginationParams returns default pagination params
+func (s *MongoStorage) NewPaginationParams() *storer.PaginationParams {
+	return &storer.PaginationParams{
+		SortBy: "-_id",
+		Page:   0,
+		Limit:  50,
+	}
+}
