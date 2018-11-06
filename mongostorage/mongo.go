@@ -83,6 +83,15 @@ func (s *MongoStorage) Delete(collection string, query interface{}) error {
 	return err
 }
 
+// Count retrieves object count directly from dbms
+func (s *MongoStorage) Count(collection string, query interface{}) (int, error) {
+	return s.session.
+		DB(s.dialInfo.Database).
+		C(collection).
+		Find(query).
+		Count()
+}
+
 // Close connection
 func (s *MongoStorage) Close() error {
 	s.session.Close()

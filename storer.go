@@ -13,6 +13,7 @@ type Storer interface {
 	Create(table string, object interface{}) error
 	Update(table string, query interface{}, change interface{}) error
 	Delete(table string, query interface{}) error
+	Count(table string, query interface{}) (int, error)
 	Close() error
 	NewPaginationParams() *PaginationParams
 }
