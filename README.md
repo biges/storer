@@ -3,7 +3,7 @@ Generic data store interface
 
 ## Installation
 ```
-go get github.com/ahmet/storer
+go get github.com/biges/storer
 ```
 
 ## Usage
@@ -15,7 +15,7 @@ import (
 	"os"
 	"time"
 
-	mongo "github.com/ahmet/storer/mongostorage"
+	mongo "github.com/biges/storer/mongostorage"
 	_ "github.com/joho/godotenv/autoload"
 	"gopkg.in/mgo.v2/bson"
 )

@@ -3,8 +3,8 @@ package mongostorage
 import (
 	"fmt"
 
-	"github.com/ahmet/storer"
-	"github.com/globalsign/mgo"
+	"github.com/biges/mgo"
+	"github.com/biges/storer"
 )
 
 // MongoStorage holds session and dial info of MongoDB connection
@@ -71,6 +71,15 @@ func (s *MongoStorage) Update(collection string, query interface{}, change inter
 	defer session.Close()
 
 	_, err := session.DB(s.dialInfo.Database).C(collection).UpdateAll(query, change)
+	return err
+}
+
+// Update updates record with given object
+func (s *MongoStorage) UpdateWithOptions(collection string, query interface{}, change interface{}, options interface{}) error {
+	session := s.session.Clone()
+	defer session.Close()
+
+	_, err := session.DB(s.dialInfo.Database).C(collection).UpdateWithArrayFilters(query, change, options, false)
 	return err
 }
 
