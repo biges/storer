@@ -101,6 +101,14 @@ func (s *MongoStorage) Count(collection string, query interface{}) (int, error) 
 		Count()
 }
 
+// Aggregate aggregate object(s) directly from dbms
+func (s *MongoStorage) Aggregate(collection string, query interface{}, result interface{}) error {
+	return s.session.
+		DB(s.dialInfo.Database).
+		C(collection).
+		Pipe(query).All(result)
+}
+
 // Close connection
 func (s *MongoStorage) Close() error {
 	s.session.Close()
