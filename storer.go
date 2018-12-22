@@ -12,6 +12,7 @@ type Storer interface {
 	Find(table string, query interface{}, result interface{}, pagination *PaginationParams) error
 	Create(table string, object interface{}) error
 	Update(table string, query interface{}, change interface{}) error
+	UpdateWithOptions(table string, query interface{}, change interface{}, options interface{}) error
 	Delete(table string, query interface{}) error
 	Count(table string, query interface{}) (int, error)
 	Close() error

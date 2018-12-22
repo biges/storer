@@ -3,8 +3,8 @@ package mongostorage
 import (
 	"fmt"
 
-	"github.com/ahmet/storer"
-	"github.com/globalsign/mgo"
+	"github.com/biges/mgo"
+	"github.com/biges/storer"
 )
 
 // MongoStorage holds session and dial info of MongoDB connection
@@ -74,6 +74,15 @@ func (s *MongoStorage) Update(collection string, query interface{}, change inter
 	return err
 }
 
+// Update updates record with given object
+func (s *MongoStorage) UpdateWithOptions(collection string, query interface{}, change interface{}, options interface{}) error {
+	session := s.session.Clone()
+	defer session.Close()
+
+	_, err := session.DB(s.dialInfo.Database).C(collection).UpdateWithArrayFilters(query, change, options, false)
+	return err
+}
+
 // Delete remove object with given id from store
 func (s *MongoStorage) Delete(collection string, query interface{}) error {
 	session := s.session.Clone()
@@ -90,6 +99,14 @@ func (s *MongoStorage) Count(collection string, query interface{}) (int, error) 
 		C(collection).
 		Find(query).
 		Count()
+}
+
+// Aggregate aggregate object(s) directly from dbms
+func (s *MongoStorage) Aggregate(collection string, query interface{}, result interface{}) error {
+	return s.session.
+		DB(s.dialInfo.Database).
+		C(collection).
+		Pipe(query).All(result)
 }
 
 // Close connection
