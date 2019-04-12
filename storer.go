@@ -10,6 +10,7 @@ var ErrNotFound = errors.New("not found")
 // Storer defines common data storage functions
 type Storer interface {
 	Find(table string, query interface{}, result interface{}, pagination *PaginationParams) error
+	FindOne(table string, id string, result interface{}) error
 	Create(table string, object interface{}) error
 	Update(table string, query interface{}, change interface{}) error
 	UpdateWithOptions(table string, query interface{}, change interface{}, options interface{}) error
