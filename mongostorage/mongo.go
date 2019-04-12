@@ -58,14 +58,14 @@ func (s *MongoStorage) Find(collection string, query interface{}, result interfa
 }
 
 // FindOne returns matching document
-func (s *MongoStorage) FindOne(collection string, id string, result interface{}) error {
+func (s *MongoStorage) FindOne(collection string, query interface{}, result interface{}) error {
 	session := s.session.Clone()
 	defer session.Close()
 
 	return session.
 		DB(s.dialInfo.Database).
 		C(collection).
-		FindId(id).
+		Find(query).
 		One(result)
 }
 
