@@ -57,6 +57,18 @@ func (s *MongoStorage) Find(collection string, query interface{}, result interfa
 		Limit(pagination.Limit).All(result)
 }
 
+// FindOne returns matching document
+func (s *MongoStorage) FindOne(collection string, id string, result interface{}) error {
+	session := s.session.Clone()
+	defer session.Close()
+
+	return session.
+		DB(s.dialInfo.Database).
+		C(collection).
+		FindId(id).
+		One(result)
+}
+
 // Create inserts given object to store
 func (s *MongoStorage) Create(collection string, object interface{}) error {
 	session := s.session.Clone()
@@ -74,7 +86,7 @@ func (s *MongoStorage) Update(collection string, query interface{}, change inter
 	return err
 }
 
-// Update updates record with given object
+// UpdateWithOptions updates record with given object
 func (s *MongoStorage) UpdateWithOptions(collection string, query interface{}, change interface{}, options interface{}) error {
 	session := s.session.Clone()
 	defer session.Close()
