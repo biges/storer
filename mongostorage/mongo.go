@@ -2,6 +2,7 @@ package mongostorage
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/biges/mgo"
 	"github.com/biges/storer"
@@ -52,7 +53,7 @@ func (s *MongoStorage) Find(collection string, query interface{}, result interfa
 		DB(s.dialInfo.Database).
 		C(collection).
 		Find(query).
-		Sort(pagination.SortBy).
+		Sort(strings.Split(pagination.SortBy, ",")...).
 		Skip(pagination.Page * pagination.Limit).
 		Limit(pagination.Limit).All(result)
 }
