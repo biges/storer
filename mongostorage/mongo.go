@@ -122,6 +122,11 @@ func (s *MongoStorage) Aggregate(collection string, query interface{}, result in
 		Pipe(query).All(result)
 }
 
+// EnsureIndex is set index to mongodb
+func (s *MongoStorage) EnsureIndex(collection string, index mgo.Index) error {
+	return s.session.DB(s.dialInfo.Database).C(collection).EnsureIndex(index)
+}
+
 // Close connection
 func (s *MongoStorage) Close() error {
 	s.session.Close()
