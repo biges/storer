@@ -22,7 +22,7 @@ func NewMongoStorage(uri string) (*MongoStorage, error) {
 		return nil, fmt.Errorf("invalid MongoDB URI: %v", parseErr)
 	}
 
-	session, dialErr := mgo.Dial(uri)
+	session, dialErr := mgo.DialWithInfo(parsedURL)
 	if dialErr != nil {
 		return nil, fmt.Errorf("can't connect to MongoDB: %v", dialErr)
 	}
