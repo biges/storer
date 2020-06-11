@@ -50,7 +50,6 @@ func NewMongoStorageOfficial(uri string) (*MongoStorageOfficial, error) {
 // Find returns all matching documents with query and pagination params
 func (s *MongoStorageOfficial) Find(collectionName string, query interface{}, result interface{}, pagination *storer.PaginationParams) error {
 
-	s.ctx, _ = context.WithTimeout(context.Background(), 30*time.Second)
 	collection := s.session.Collection(collectionName)
 	//filter options
 	filterOptions := options.Find()
@@ -213,7 +212,6 @@ func (s *MongoStorageOfficial) Aggregate(collectionName string, query interface{
 
 	return nil
 }
-
 
 //EnsureIndex is set index to mongodb - not implemented because of official mongo driver has not method like this
 func (s *MongoStorageOfficial) EnsureIndex(collection string, index mgo.Index) error {
