@@ -7,12 +7,13 @@ import (
 	"fmt"
 	"github.com/biges/mgo"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"strings"
 	"time"
 
-	"github.com/biges/cyclops/storer"
+	"github.com/biges/storer"
 )
 
 // MongoStorage holds session and dial info of MongoDB connection
@@ -20,14 +21,14 @@ type MongoStorageOfficial struct {
 	options                 *options.ClientOptions
 	client                  *mongo.Client
 	session                 *mongo.Database
-	ctx                     context.Context
 	DefaultPaginationParams *storer.PaginationParams
 }
 
 // NewMongoStorage returns a new MongoStorage with an active session
 func NewMongoStorageOfficial(uri string) (*MongoStorageOfficial, error) {
 
-	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
 	clientOptions := options.Client().ApplyURI(uri)
 	client, err := mongo.Connect(ctx, clientOptions)
 	if err != nil {
@@ -38,7 +39,6 @@ func NewMongoStorageOfficial(uri string) (*MongoStorageOfficial, error) {
 		session: database,
 		client:  client,
 		options: clientOptions,
-		ctx:     ctx,
 		DefaultPaginationParams: &storer.PaginationParams{
 			Limit:  50,
 			SortBy: "_id",
@@ -50,6 +50,9 @@ func NewMongoStorageOfficial(uri string) (*MongoStorageOfficial, error) {
 // Find returns all matching documents with query and pagination params
 func (s *MongoStorageOfficial) Find(collectionName string, query interface{}, result interface{}, pagination *storer.PaginationParams) error {
 
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
 	collection := s.session.Collection(collectionName)
 	//filter options
 	filterOptions := options.Find()
@@ -58,17 +61,17 @@ func (s *MongoStorageOfficial) Find(collectionName string, query interface{}, re
 	}
 	skipVal := int64(pagination.Page * pagination.Limit)
 	limitVal := int64(pagination.Limit)
-	filterOptions.SetSort(bson.D{{strings.Split(pagination.SortBy, ",")[0], -1}})
+	filterOptions.SetSort(bson.D{primitive.E{Key: strings.Split(pagination.SortBy, ",")[0], Value: -1}})
 	filterOptions.Skip = &skipVal
 	filterOptions.Limit = &limitVal
 
-	cur, err := collection.Find(s.ctx, query, filterOptions)
+	cur, err := collection.Find(ctx, query, filterOptions)
 	if err != nil {
 		return err
 	}
 
 	var results []bson.M
-	if err := cur.All(s.ctx, &results); err != nil {
+	if err := cur.All(ctx, &results); err != nil {
 		return err
 	}
 
@@ -87,8 +90,10 @@ func (s *MongoStorageOfficial) Find(collectionName string, query interface{}, re
 
 // FindOne returns matching document
 func (s *MongoStorageOfficial) FindOne(collectionName string, query interface{}, result interface{}) error {
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
 	collection := s.session.Collection(collectionName)
-	err := collection.FindOne(s.ctx, query).Decode(result)
+	err := collection.FindOne(ctx, query).Decode(result)
 
 	if err != nil {
 		return err
@@ -99,8 +104,10 @@ func (s *MongoStorageOfficial) FindOne(collectionName string, query interface{},
 
 // Create inserts given object to store
 func (s *MongoStorageOfficial) Create(collectionName string, object interface{}) error {
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
 	collection := s.session.Collection(collectionName)
-	_, err := collection.InsertOne(s.ctx, object)
+	_, err := collection.InsertOne(ctx, object)
 
 	if err != nil {
 		return err
@@ -111,8 +118,10 @@ func (s *MongoStorageOfficial) Create(collectionName string, object interface{})
 
 // Create inserts given list of object to store
 func (s *MongoStorageOfficial) CreateMany(collectionName string, objects []interface{}) error {
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
 	collection := s.session.Collection(collectionName)
-	_, err := collection.InsertMany(s.ctx, objects)
+	_, err := collection.InsertMany(ctx, objects)
 
 	if err != nil {
 		return err
@@ -123,8 +132,10 @@ func (s *MongoStorageOfficial) CreateMany(collectionName string, objects []inter
 
 // Update updates record with given object
 func (s *MongoStorageOfficial) Update(collectionName string, query interface{}, change interface{}) error {
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
 	collection := s.session.Collection(collectionName)
-	_, err := collection.UpdateOne(s.ctx, query, change)
+	_, err := collection.UpdateOne(ctx, query, change)
 
 	if err != nil {
 		return err
@@ -135,8 +146,10 @@ func (s *MongoStorageOfficial) Update(collectionName string, query interface{}, 
 
 // Update updates record with given lis of object object
 func (s *MongoStorageOfficial) UpdateMany(collectionName string, query interface{}, change interface{}) error {
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
 	collection := s.session.Collection(collectionName)
-	_, err := collection.UpdateMany(s.ctx, query, change)
+	_, err := collection.UpdateMany(ctx, query, change)
 
 	if err != nil {
 		return err
@@ -152,8 +165,10 @@ func (s *MongoStorageOfficial) UpdateWithOptions(collection string, query interf
 
 // Delete remove object with given id from store
 func (s *MongoStorageOfficial) Delete(collectionName string, query interface{}) error {
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
 	collection := s.session.Collection(collectionName)
-	_, err := collection.DeleteOne(s.ctx, query)
+	_, err := collection.DeleteOne(ctx, query)
 
 	if err != nil {
 		return err
@@ -164,8 +179,10 @@ func (s *MongoStorageOfficial) Delete(collectionName string, query interface{}) 
 
 // Delete remove object with given list of ids from store
 func (s *MongoStorageOfficial) DeleteMany(collectionName string, query interface{}) error {
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
 	collection := s.session.Collection(collectionName)
-	_, err := collection.DeleteMany(s.ctx, query)
+	_, err := collection.DeleteMany(ctx, query)
 
 	if err != nil {
 		return err
@@ -176,8 +193,10 @@ func (s *MongoStorageOfficial) DeleteMany(collectionName string, query interface
 
 // Count retrieves object count directly from dbms
 func (s *MongoStorageOfficial) Count(collectionName string, query interface{}) (int, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
 	collection := s.session.Collection(collectionName)
-	docCount, err := collection.CountDocuments(s.ctx, query)
+	docCount, err := collection.CountDocuments(ctx, query)
 
 	if err != nil {
 		return 0, err
@@ -188,15 +207,17 @@ func (s *MongoStorageOfficial) Count(collectionName string, query interface{}) (
 
 // Aggregate aggregate object(s) directly from dbms
 func (s *MongoStorageOfficial) Aggregate(collectionName string, query interface{}, result interface{}) error {
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
 	collection := s.session.Collection(collectionName)
-	cur, err := collection.Aggregate(s.ctx, query)
+	cur, err := collection.Aggregate(ctx, query)
 
 	if err != nil {
 		return err
 	}
 
 	var results []bson.M
-	if err := cur.All(s.ctx, &results); err != nil {
+	if err := cur.All(ctx, &results); err != nil {
 		return err
 	}
 
@@ -220,7 +241,9 @@ func (s *MongoStorageOfficial) EnsureIndex(collection string, index mgo.Index) e
 
 // Close connection
 func (s *MongoStorageOfficial) Close() error {
-	return s.client.Disconnect(s.ctx)
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+	return s.client.Disconnect(ctx)
 }
 
 // NewPaginationParams returns default pagination params
