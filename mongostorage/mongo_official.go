@@ -83,11 +83,11 @@ func (s *MongoStorageOfficial) Find(collectionName string, query interface{}, re
 
 	txn.End()
 
-	if err := cur.All(ctx, result); err != nil {
+	if err := cur.Err(); err != nil {
 		return err
 	}
 
-	if err := cur.Err(); err != nil {
+	if err := cur.All(ctx, result); err != nil {
 		return err
 	}
 
