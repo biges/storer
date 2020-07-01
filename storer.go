@@ -13,9 +13,12 @@ type Storer interface {
 	FindOne(table string, query interface{}, result interface{}) error
 	Aggregate(table string, query interface{}, result interface{}) error
 	Create(table string, object interface{}) error
+	CreateMany(table string, object []interface{}) error
 	Update(table string, query interface{}, change interface{}) error
+	UpdateMany(table string, query interface{}, change interface{}) error
 	UpdateWithOptions(table string, query interface{}, change interface{}, options interface{}) error
 	Delete(table string, query interface{}) error
+	DeleteMany(table string, query interface{}) error
 	Count(table string, query interface{}) (int, error)
 	Close() error
 	NewPaginationParams() *PaginationParams

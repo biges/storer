@@ -1,6 +1,7 @@
 package fakedb
 
 import (
+	"errors"
 	"reflect"
 
 	"github.com/biges/storer"
@@ -91,6 +92,18 @@ func (f *FakeStorage) Close() error {
 func (f *FakeStorage) Count(table string, query interface{}) (int, error) {
 	f.query[table] = query
 	return 0, nil
+}
+
+func (f *FakeStorage) CreateMany(collection string, query []interface{}) error {
+	return errors.New("not implemented")
+}
+
+func (f *FakeStorage) UpdateMany(collection string, query interface{}, change interface{}) error {
+	return errors.New("not implemented")
+}
+
+func (f *FakeStorage) DeleteMany(collection string, query interface{}) error {
+	return errors.New("not implemented")
 }
 
 // NewPaginationParams just a method for satisfying storer interface.
