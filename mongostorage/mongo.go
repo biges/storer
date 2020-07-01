@@ -1,6 +1,7 @@
 package mongostorage
 
 import (
+	"errors"
 	"fmt"
 	"strings"
 
@@ -131,6 +132,18 @@ func (s *MongoStorage) EnsureIndex(collection string, index mgo.Index) error {
 func (s *MongoStorage) Close() error {
 	s.session.Close()
 	return nil
+}
+
+func (s *MongoStorage) CreateMany(collection string, query []interface{}) error {
+	return errors.New("not implemented")
+}
+
+func (s *MongoStorage) UpdateMany(collection string, query interface{}, change interface{}) error {
+	return errors.New("not implemented")
+}
+
+func (s *MongoStorage) DeleteMany(collection string, query interface{}) error {
+	return errors.New("not implemented")
 }
 
 // NewPaginationParams returns default pagination params

@@ -8,7 +8,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/biges/mgo"
 	"github.com/biges/storer"
 	"github.com/newrelic/go-agent/v3/integrations/nrmongo"
 	"github.com/newrelic/go-agent/v3/newrelic"
@@ -40,7 +39,7 @@ func NewMongoStorageOfficial(uri string, newRelicApp *newrelic.Application) (*Mo
 		return nil, fmt.Errorf("can't connect to MongoDB: %v", err)
 	}
 
-	database := client.Database(clientOptions.Auth.AuthSource)
+	database := client.Database("cyclops")
 	return &MongoStorageOfficial{
 		session:     database,
 		client:      client,
@@ -84,18 +83,11 @@ func (s *MongoStorageOfficial) Find(collectionName string, query interface{}, re
 
 	txn.End()
 
-	var results []bson.M
-	if err := cur.All(ctx, &results); err != nil {
+	if err := cur.All(ctx, result); err != nil {
 		return err
 	}
 
 	if err := cur.Err(); err != nil {
-		return err
-	}
-
-	jsonString, _ := bson.Marshal(results)
-	err = bson.Unmarshal(jsonString, result)
-	if err != nil {
 		return err
 	}
 
@@ -317,11 +309,6 @@ func (s *MongoStorageOfficial) Aggregate(collectionName string, query interface{
 	}
 
 	return nil
-}
-
-//EnsureIndex is set index to mongodb - not implemented because of official mongo driver has not method like this
-func (s *MongoStorageOfficial) EnsureIndex(collection string, index mgo.Index) error {
-	return errors.New("not implemented")
 }
 
 // Close connection
