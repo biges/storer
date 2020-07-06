@@ -28,7 +28,7 @@ type MongoStorageOfficial struct {
 
 // NewMongoStorage returns a new MongoStorage with an active session
 func NewMongoStorageOfficial(uri string, newRelicApp *newrelic.Application) (*MongoStorageOfficial, error) {
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 60*time.Second)
 	defer cancel()
 
 	nrMon := nrmongo.NewCommandMonitor(nil)
@@ -55,7 +55,7 @@ func NewMongoStorageOfficial(uri string, newRelicApp *newrelic.Application) (*Mo
 
 // Find returns all matching documents with query and pagination params
 func (s *MongoStorageOfficial) Find(collectionName string, query interface{}, result interface{}, pagination *storer.PaginationParams) error {
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 60*time.Second)
 	defer cancel()
 
 	txn := new(newrelic.Transaction)
@@ -96,7 +96,7 @@ func (s *MongoStorageOfficial) Find(collectionName string, query interface{}, re
 
 // FindOne returns matching document
 func (s *MongoStorageOfficial) FindOne(collectionName string, query interface{}, result interface{}) error {
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 60*time.Second)
 	defer cancel()
 
 	txn := new(newrelic.Transaction)
@@ -118,7 +118,7 @@ func (s *MongoStorageOfficial) FindOne(collectionName string, query interface{},
 
 // Create inserts given object to store
 func (s *MongoStorageOfficial) Create(collectionName string, object interface{}) error {
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 60*time.Second)
 	defer cancel()
 	txn := new(newrelic.Transaction)
 	if s.newRelicApp != nil {
@@ -139,7 +139,7 @@ func (s *MongoStorageOfficial) Create(collectionName string, object interface{})
 
 // Create inserts given list of object to store
 func (s *MongoStorageOfficial) CreateMany(collectionName string, objects []interface{}) error {
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 60*time.Second)
 	defer cancel()
 
 	txn := new(newrelic.Transaction)
@@ -161,7 +161,7 @@ func (s *MongoStorageOfficial) CreateMany(collectionName string, objects []inter
 
 // Update updates record with given object
 func (s *MongoStorageOfficial) Update(collectionName string, query interface{}, change interface{}) error {
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 60*time.Second)
 	defer cancel()
 
 	txn := new(newrelic.Transaction)
@@ -183,7 +183,7 @@ func (s *MongoStorageOfficial) Update(collectionName string, query interface{}, 
 
 // Update updates record with given lis of object object
 func (s *MongoStorageOfficial) UpdateMany(collectionName string, query interface{}, change interface{}) error {
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 60*time.Second)
 	defer cancel()
 
 	txn := new(newrelic.Transaction)
@@ -210,7 +210,7 @@ func (s *MongoStorageOfficial) UpdateWithOptions(collection string, query interf
 
 // Delete remove object with given id from store
 func (s *MongoStorageOfficial) Delete(collectionName string, query interface{}) error {
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 60*time.Second)
 	defer cancel()
 
 	txn := new(newrelic.Transaction)
@@ -232,7 +232,7 @@ func (s *MongoStorageOfficial) Delete(collectionName string, query interface{}) 
 
 // Delete remove object with given list of ids from store
 func (s *MongoStorageOfficial) DeleteMany(collectionName string, query interface{}) error {
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 60*time.Second)
 	defer cancel()
 
 	txn := new(newrelic.Transaction)
@@ -254,7 +254,7 @@ func (s *MongoStorageOfficial) DeleteMany(collectionName string, query interface
 
 // Count retrieves object count directly from dbms
 func (s *MongoStorageOfficial) Count(collectionName string, query interface{}) (int, error) {
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 60*time.Second)
 	defer cancel()
 
 	txn := new(newrelic.Transaction)
@@ -276,7 +276,7 @@ func (s *MongoStorageOfficial) Count(collectionName string, query interface{}) (
 
 // Aggregate aggregate object(s) directly from dbms
 func (s *MongoStorageOfficial) Aggregate(collectionName string, query interface{}, result interface{}) error {
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 60*time.Second)
 	defer cancel()
 
 	txn := new(newrelic.Transaction)
@@ -313,7 +313,7 @@ func (s *MongoStorageOfficial) Aggregate(collectionName string, query interface{
 
 // Close connection
 func (s *MongoStorageOfficial) Close() error {
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 60*time.Second)
 	defer cancel()
 
 	return s.client.Disconnect(ctx)
