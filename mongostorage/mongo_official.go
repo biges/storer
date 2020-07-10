@@ -12,7 +12,6 @@ import (
 	"github.com/newrelic/go-agent/v3/integrations/nrmongo"
 	"github.com/newrelic/go-agent/v3/newrelic"
 	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
@@ -71,7 +70,23 @@ func (s *MongoStorageOfficial) Find(collectionName string, query interface{}, re
 	}
 	skipVal := int64(pagination.Page * pagination.Limit)
 	limitVal := int64(pagination.Limit)
-	filterOptions.SetSort(bson.D{primitive.E{Key: strings.Split(pagination.SortBy, ",")[0], Value: -1}})
+
+	sortBy := bson.D{}
+	for _, sortOpt := range strings.Split(pagination.SortBy, ",") {
+		if string(sortOpt[0]) == "-" {
+			sortBy = append(sortBy, bson.E{
+				Key:   string(sortOpt[1:]),
+				Value: -1,
+			})
+		} else {
+			sortBy = append(sortBy, bson.E{
+				Key:   sortOpt,
+				Value: 1,
+			})
+		}
+	}
+
+	filterOptions.SetSort(sortBy)
 	filterOptions.Skip = &skipVal
 	filterOptions.Limit = &limitVal
 
